@@ -96,7 +96,6 @@ def generate_fake_records(number_of_records=100):
 
 def get_records(host='localhost', rpcUser=None, rpcPass=None, rpcPort=22555):
     ''' Gets DOGECOIN records from dogecoin RPC server '''
-    
 
     try:
         with open(path.join(path.expanduser("~"), '.dogecoin', 'dogecoin.conf'), mode='r') as f:
