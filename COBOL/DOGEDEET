@@ -11,14 +11,17 @@
       *
       * 08/30/2020
       * License GPL v3
-      */////////////////////////////////////////////////////////////// 
+      *///////////////////////////////////////////////////////////////
+	  
        IDENTIFICATION DIVISION.
        PROGRAM-ID.   DOGEDEET.
        AUTHOR. SOLDIER OF FORTRAN.
        INSTALLATION. DOGE BANK.
        DATE-WRITTEN. 08/30/20.
        SECURITY. CONFIDENTIAL.
+	   
        ENVIRONMENT DIVISION.
+	   
        DATA DIVISION.
        WORKING-STORAGE SECTION.
       * VSAM Record Layout
@@ -77,9 +80,10 @@
       *
        LINKAGE SECTION.
        01  DFHCOMMAREA                       PIC X(10).
+	   
        PROCEDURE DIVISION.
        DOGE-MAIN.
-      *
+
            IF EIBCALEN > ZERO THEN
                MOVE DFHCOMMAREA TO DOGECOMMS-AREA.
 
@@ -133,18 +137,19 @@
                RETURN TRANSID('DEET')
                       COMMAREA(DOGECOMMS-AREA)
            END-EXEC.
-       DOGE-EXIT.
+		   
+       DOGE-EXIT.   
            GOBACK.
-      *
+
        DOGE-WTO.
            EXEC CICS WRITE OPERATOR
                TEXT(WTO-MESSAGE)
            END-EXEC.
            MOVE SPACES TO WTO-MESSAGE.
 
-      * Start by checking where we are or if we have a valid key
-       DOGE-START-BROWSE.
 
+       DOGE-START-BROWSE.
+      * Start by checking where we are or if we have a valid key
            EXEC CICS
                STARTBR FILE('DOGEVSAM')
                        RIDFLD(RECORD-ID)
@@ -209,6 +214,7 @@
            MOVE SPACES TO WTO-MESSAGE.
 
        FILL-SCREEN-DATA.
+	   
            MOVE TDATE TO KEYO.
            MOVE DDATE TO DATEO.
            IF TAMT-SIGN-NEGATIVE THEN
@@ -231,10 +237,8 @@
            MOVE TAMT-SIGN TO DSIGN.
       *
        CONVERT-DATE.
-      *
       * Converts Linux EPOCH to CICS Absolute Time
       * and places it in DISPLAY-TRAN:DDATE as MM/DD/YYYY
-      *
            MOVE NUM-DATE TO TEMP-DATE.
            MULTIPLY 1000 BY TEMP-DATE.
            ADD SINCE-EPOCH TO TEMP-DATE.
@@ -255,8 +259,9 @@
                        INTO(DOGEDT1I)
                        ASIS
            END-EXEC.
+		   
        PARSE-KEY.
-      *    Do we want to leave this screen? 
+      * Do we want to leave this screen? 
            IF OPTIONI EQUAL TO 'T' OR OPTIONI EQUAL TO 't'
       -       OR OPTIONI EQUAL TO 'M' OR OPTIONI EQUAL TO 'm'
                MOVE 'Opening Transaction History' TO WTO-MESSAGE
@@ -291,4 +296,3 @@
            MOVE SPACES TO WTO-MESSAGE.
       * Shush compiler warnings    
            MOVE SPACES TO WTO-MESSAGE.
-               

@@ -9,13 +9,16 @@
       * 08/30/2020
       * License GPL v3
       */////////////////////////////////////////////////////////////// 
+	  
        IDENTIFICATION DIVISION.
        PROGRAM-ID.   DOGETRAN.
        AUTHOR. SOLDIER OF FORTRAN.
        INSTALLATION. DOGE BANK.
        DATE-WRITTEN. 08/30/20.
        SECURITY. CONFIDENTIAL.
+	   
        ENVIRONMENT DIVISION.
+	   
        DATA DIVISION.
        WORKING-STORAGE SECTION.
       * VSAM Record Layout
@@ -58,13 +61,13 @@
        COPY DOGETR.
        COPY DFHAID.
        COPY DFHBMSCA.
+	  *
        LINKAGE SECTION.
-      *
        01  DFHCOMMAREA                       PIC X(10).
-      *
+
        PROCEDURE DIVISION.
        DOGE-MAIN.
-      *
+
            IF EIBCALEN > ZERO THEN
                MOVE DFHCOMMAREA TO DOGECOMMS-AREA.
 
@@ -112,14 +115,15 @@
                RETURN TRANSID('DTRN')
                       COMMAREA(DOGECOMMS-AREA)
            END-EXEC.
+
        DOGE-EXIT.
            GOBACK.
-      *   
+  
        LET-ER-RIP.
-      *
            EXEC CICS STARTBR FILE('DOGEVSAM')
                 RIDFLD(START-RECORD-ID)
-           END-EXEC. 
+           END-EXEC.
+		   
        BACK-IT-UP.
       * Yes, this is a hack but i was too stupid to use READPREV
            MOVE 'PF7 PREV -' TO PREVO
@@ -129,20 +133,23 @@
                    INTO(TRANSACTION)
                END-EXEC
            ELSE
-      *         MOVE 'BACK TO ONE' TO WTO-MESSAGE
-      *         PERFORM DOGE-WTO
+		   
+      *      MOVE 'BACK TO ONE' TO WTO-MESSAGE
+      *      PERFORM DOGE-WTO
+	  
                MOVE SPACES TO PREVO.
-      *     MOVE 'BACK THAT THANG UP' TO WTO-MESSAGE.
-      *     PERFORM DOGE-WTO.
-      *    This does nothing but the compiler complains ending on an IF         
+      *       MOVE 'BACK THAT THANG UP' TO WTO-MESSAGE.
+      *       PERFORM DOGE-WTO.
+      * This does nothing but the compiler complains ending on an IF         
            MOVE 0 TO RESPONSE-CODE.
+		   
        DOGE-LIST-TRANSACTIONS.
-      *   Skip the first record
+      * Skip the first record
            EXEC CICS READNEXT FILE('DOGEVSAM')
                RIDFLD(START-RECORD-ID)
                INTO(TRANSACTION)
            END-EXEC.
-      *   Loop through and show 7 lines
+      * Loop through and show 7 lines
            PERFORM DISPLAY-TRANS VARYING LINE-NUMBER
               FROM 1 BY 1 UNTIL LINE-NUMBER IS EQUAL TO 8 OR 
               DONE-RECORDS IS EQUAL TO 'DONE'. 
@@ -153,8 +160,9 @@
            EXEC CICS ENDBR 
                FILE('DOGEVSAM')
            END-EXEC.
-      *    This does nothing but the compiler complains ending on an IF         
+      * This does nothing but the compiler complains ending on an IF         
            MOVE 0 TO RESPONSE-CODE.
+		   
        CONVERT-AMOUNT-TO-DISPLAY.
       * Converts the number from VSAM to ##,###,###.########
            MOVE DFHGREEN TO RECENT-COLOR.
@@ -167,12 +175,10 @@
                SUBTRACT THE-AMOUNT FROM ZERO GIVING THE-AMOUNT.
            MOVE THE-AMOUNT TO DAMOUNT.
            MOVE TAMT-SIGN TO DSIGN.
-      *
+
        CONVERT-DATE.
-      *
       * Converts Linux EPOCH to CICS Absolute Time
       * and places it in DISPLAY-TRAN:DDATE as MM/DD/YYYY
-      *
            MOVE NUM-DATE TO TEMP-DATE.
            MULTIPLY 1000 BY TEMP-DATE.
            ADD SINCE-EPOCH TO TEMP-DATE.
@@ -180,7 +186,7 @@
                 DATESEP('/')
                 MMDDYYYY(DDATE)
            END-EXEC.
-      *
+
        DOGE-WTO.
            EXEC CICS WRITE OPERATOR
                TEXT(WTO-MESSAGE)
@@ -193,7 +199,7 @@
                INTO(TRANSACTION)
            END-EXEC
            IF TDATE IS EQUAL TO '9999999999'                                
-      *    We're done here 
+      * We're done here 
                MOVE 'DONE' TO DONE-RECORDS
                MOVE SPACES TO NEXTO
                MOVE 'PF7 PREV' TO PREVO            
@@ -202,7 +208,7 @@
                PERFORM CONVERT-AMOUNT-TO-DISPLAY
                MOVE TLABEL TO DLABEL
                PERFORM FILL-ROWS-WITH-DATA.
-      *    This does nothing but the compiler complains ending on an IF         
+      * This does nothing but the compiler complains ending on an IF         
            MOVE 0 TO RESPONSE-CODE.
 
        FILL-ROWS-WITH-DATA.
@@ -275,12 +281,11 @@
                 MOVE RECENT-COLOR TO TRAN7SC
                 MOVE DSIGN TO TRAN7SO
                 MOVE THE-AMOUNT TO TRAN7AO.
-      *    This does nothing but the compiler complains ending on an IF         
+      * This does nothing but the compiler complains ending on an IF         
            MOVE 0 TO RESPONSE-CODE.
-      *     
+     
        RECEIVE-OPTION.
       * Get the option the user enters
-
            MOVE 'DTRN - Getting Input from User.' TO WTO-MESSAGE.
            PERFORM DOGE-WTO.
            EXEC CICS
@@ -290,7 +295,7 @@
            END-EXEC.
 
        PARSE-OPTION.
-      *    Parse the user entry 
+      * Parse the user entry 
            MOVE OPTIONI TO WTO-MESSAGE.          
            PERFORM DOGE-WTO.
            IF OPTIONI EQUAL TO 'T' OR OPTIONI EQUAL TO 'M'

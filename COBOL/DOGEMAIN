@@ -9,13 +9,16 @@
       * 08/30/2020
       * License GPL v3
       *///////////////////////////////////////////////////////////////  
+	  
        IDENTIFICATION DIVISION.
        PROGRAM-ID.   DOGECOIN.
        AUTHOR. SOLDIER OF FORTRAN.
        INSTALLATION. DOGE BANK.
        DATE-WRITTEN. 08/30/20.
        SECURITY. CONFIDENTIAL.
+	   
        ENVIRONMENT DIVISION.
+	   
        DATA DIVISION.
        WORKING-STORAGE SECTION.
       * To Create outgoing commands
@@ -77,16 +80,16 @@
        COPY DOGEMN.
        COPY DFHAID.
        COPY DFHBMSCA.
+	  * 
        LINKAGE SECTION.
-      *
        01  DFHCOMMAREA                       PIC X(10).
-      *
+
        PROCEDURE DIVISION.
        00000-MAIN.
-      *
+
            IF EIBCALEN > ZERO THEN
                MOVE DFHCOMMAREA TO DOGECOMMS-AREA.
-      *
+
            IF EIBCALEN EQUAL TO ZERO OR SUCH-DOGE
 
                MOVE 'STARTING DOGE CICS.' TO WTO-MESSAGE
@@ -121,9 +124,10 @@
                RETURN TRANSID('DOGE')
                       COMMAREA(DOGECOMMS-AREA)
            END-EXEC.
+		   
        DOGE-EXIT.
            GOBACK.
-      *
+
        RECEIVE-OPTION.
       * Get the option the user enters
 
@@ -136,7 +140,7 @@
            END-EXEC.
 
        PARSE-OPTION.
-      *    Parse the user entry 
+      * Parse the user entry 
            IF OPTIONI EQUAL TO 'T' OR OPTIONI EQUAL TO 'M'
                MOVE 'Opening Transaction History' TO WTO-MESSAGE
                PERFORM DOGE-WTO
@@ -167,18 +171,18 @@
            MOVE SPACES TO WTO-MESSAGE.
 
        DOGE-MAIN-SCREEN.
-      *    Show the main doge screen
+      * Show the main doge screen
            MOVE 'Sending Doge CICS Main Screen.' TO WTO-MESSAGE.
            PERFORM DOGE-WTO.
            EXEC CICS STARTBR FILE('DOGEVSAM')
                 RIDFLD(START-RECORD-ID)
            END-EXEC.
-      *        First is our dummy 'eyecatcher' records at the bottom
+      * First is our dummy 'eyecatcher' records at the bottom
            EXEC CICS READPREV FILE('DOGEVSAM')
                 RIDFLD(START-RECORD-ID)
                 INTO(TRANSACTION)
            END-EXEC.
-      *        Next is our last record
+      * Next is our last record
            EXEC CICS READPREV FILE('DOGEVSAM')
                 RIDFLD(START-RECORD-ID)
                 INTO(TRANSACTION)
@@ -188,7 +192,7 @@
            PERFORM CONVERT-AMOUNT-TO-DISPLAY.
            MOVE RECENT-COLOR TO RECNT2C.
            MOVE DISPLAY-TRAN TO RECNT2O.
-      *        Then our second to last record
+      * Then our second to last record
            EXEC CICS READPREV FILE('DOGEVSAM')
                 RIDFLD(START-RECORD-ID)
                 INTO(TRANSACTION)
@@ -197,28 +201,28 @@
            MOVE TLABEL TO DLABEL.
            PERFORM CONVERT-AMOUNT-TO-DISPLAY.
            MOVE RECENT-COLOR TO RECNT1C.
-      *    If theres only one historical record move it up     
+      * If theres only one historical record move it up     
            IF TDATE = 0000000002
                MOVE RECNT2O TO RECNT1O
                MOVE SPACES TO RECNT1O
            ELSE
                MOVE DISPLAY-TRAN TO RECNT1O.
-      *    Now we get the current ammount
-      *    First we get reset the browse
+      * Now we get the current ammount
+      * First we get reset the browse
            MOVE 0000000001 TO START-RECORD-ID.
            EXEC CICS RESETBR FILE('DOGEVSAM')
                 RIDFLD(START-RECORD-ID)
            END-EXEC.
-      *    Then read the record
+      * Then read the record
            EXEC CICS READNEXT FILE('DOGEVSAM')
                 RIDFLD(START-RECORD-ID)
                 INTO(TRANSACTION)
            END-EXEC.
-      *    Convert it and put on the map
+      * Convert it and put on the map
            PERFORM CONVERT-AMOUNT-TO-DISPLAY.
            MOVE THE-AMOUNT TO AVAILABLE-AMOUNT.
            MOVE THE-AMOUNT TO AVAILO.
-      *    Get the next record
+      * Get the next record
            EXEC CICS READNEXT FILE('DOGEVSAM')
                 RIDFLD(START-RECORD-ID)
                 INTO(TRANSACTION)
@@ -227,7 +231,7 @@
            MOVE THE-AMOUNT TO PENDNGO.
            ADD AVAILABLE-AMOUNT TO THE-AMOUNT.
            MOVE THE-AMOUNT TO TOTALO.
-      *    Aaaaaand were done show the map now
+      * And were done show the map now
 
            EXEC CICS ENDBR 
                FILE('DOGEVSAM')
@@ -238,7 +242,7 @@
                      MAPSET('DOGEMN')
                      ERASE
            END-EXEC.
-      *    
+    
        CONVERT-AMOUNT-TO-DISPLAY.
       * Converts the number from VSAM to ##,###,###.########
            MOVE DFHGREEN TO RECENT-COLOR.
@@ -249,12 +253,10 @@
                SUBTRACT THE-AMOUNT FROM ZERO GIVING THE-AMOUNT.
            MOVE THE-AMOUNT TO DAMOUNT.
            MOVE TAMT-SIGN TO DSIGN.
-      *
+
        CONVERT-DATE.
-      *
       * Converts Linux EPOCH to CICS Absolute Time
       * and places it in DISPLAY-TRAN:DDATE as MM/DD/YYYY
-      *
            MOVE NUM-DATE TO TEMP-DATE.
            MULTIPLY 1000 BY TEMP-DATE.
            ADD SINCE-EPOCH TO TEMP-DATE.
@@ -262,7 +264,7 @@
                 DATESEP('/')
                 MMDDYYYY(DDATE)
            END-EXEC.
-      *
+
        DOGE-WTO.
            EXEC CICS WRITE OPERATOR
                TEXT(WTO-MESSAGE)

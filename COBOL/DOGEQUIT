@@ -9,13 +9,16 @@
       * 08/30/2020
       * License GPL v3
       */////////////////////////////////////////////////////////////// 
+	  
        IDENTIFICATION DIVISION.
        PROGRAM-ID.   DOGEQUIT.
        AUTHOR. SOLDIER OF FORTRAN.
        INSTALLATION. DOGE BANK.
        DATE-WRITTEN. 08/30/20.
        SECURITY. CONFIDENTIAL.
+	   
        ENVIRONMENT DIVISION.
+	   
        DATA DIVISION.
        WORKING-STORAGE SECTION.
        01  WTO-MESSAGE PIC X(38) VALUE SPACES.
@@ -32,7 +35,7 @@
                10  FACE09 PIC X(5) VALUE '(*_*)'.
                10  FACE10 PIC X(5) VALUE '(^-^)'.
            05  FACE-ARRAY REDEFINES FACES-LIST OCCURS 10 PIC X(05).
-      * 
+ 
        01  EXIT-MSG.
            10  COMMAND          PIC X VALUE X'F5'.
            10  WRITE-CONTROL    PIC X VALUE X'C3'.
@@ -67,6 +70,7 @@
        01  ISEED                PIC S9(8) COMP.
        01  FACE                 PIC S9(8) COMP. 
        01  GARBAGE              PIC S9(8) COMP.
+	   
        PROCEDURE DIVISION.
       * Preseed the random number generator
            MOVE EIBTIME TO ISEED.
@@ -81,9 +85,10 @@
            END-EXEC.
 
            EXEC CICS RETURN END-EXEC.
+		   
        RANDOM-NUMBER SECTION.
-      *    simple LCG algorithm (lifted from Boillot fortran book)
-      *    Source: KICKS Kookbook
+      * simple LCG algorithm (lifted from Boillot fortran book)
+      * Source: KICKS Kookbook
            MULTIPLY ISEED BY IA GIVING ISEED.
            IF ISEED < 0 COMPUTE ISEED = -1 * ISEED.
            ADD IC, ISEED         GIVING ISEED.
@@ -93,9 +98,10 @@
            DIVIDE FSEED BY FIM   GIVING FIM.
            COMPUTE FSEED = 1000.0 * FIM.
            MOVE FSEED TO IRNDM.
+		   
        RANDOM-NUMBER-EXIT.
            EXIT.
-      *
+
        DOGE-WTO.
            EXEC CICS WRITE OPERATOR
                TEXT(WTO-MESSAGE)

@@ -12,13 +12,16 @@
       * 08/30/2020
       * License GPL v3
       */////////////////////////////////////////////////////////////// 
+	  
        IDENTIFICATION DIVISION.
        PROGRAM-ID.   DOGESEND.
        AUTHOR. SOLDIER OF FORTRAN.
        INSTALLATION. DOGE BANK.
        DATE-WRITTEN. 08/30/20.
        SECURITY. CONFIDENTIAL.
+	   
        ENVIRONMENT DIVISION.
+
        DATA DIVISION.
        WORKING-STORAGE SECTION.
        77  SYSOUT-TOKEN        PIC X(8)  VALUE SPACES.
@@ -34,13 +37,14 @@
            05 TEXT-MESSAGE     PIC X(7)B VALUE 'SENDING'.
            05 TEXT-AMOUNT      PIC X(17)B VALUE '00000000.00000000'.
            05 TEXT-CURRENCY    PIC X(4) VALUE 'DOGE'.
+	  *
        COPY DOGESN.
        COPY DFHAID.
        COPY DFHBMSCA.
+	  *
        LINKAGE SECTION.
-      *
        01  DFHCOMMAREA                       PIC X(10).
-      *
+
        PROCEDURE DIVISION.
        DOGE-MAIN.
       * Main procedure run
@@ -74,19 +78,20 @@
                TEXT(WTO-MESSAGE)
            END-EXEC.
            MOVE SPACES TO WTO-MESSAGE.
+
        RECEIVE-INPUT.
       * Get the option the user enters
-
-      *     MOVE 'DSND - Getting Input from User.' TO WTO-MESSAGE.
-      *     PERFORM DOGE-WTO.
+      *    MOVE 'DSND - Getting Input from User.' TO WTO-MESSAGE.
+      *    PERFORM DOGE-WTO.
            EXEC CICS
                RECEIVE MAP('DOGESN1')
                        MAPSET('DOGESN')
                        INTO(DOGESN1I)
                        ASIS
            END-EXEC.
+		   
        PARSE-INPUT.
-      *    Do we want to leave this screen? 
+      * Do we want to leave this screen? 
            IF OPTIONI EQUAL TO 'T' OR OPTIONI EQUAL TO 't'
       -       OR OPTIONI EQUAL TO 'M' OR OPTIONI EQUAL TO 'm'
                MOVE 'Opening Transaction History' TO WTO-MESSAGE
@@ -110,19 +115,22 @@
            ELSE
                PERFORM MOVE-SOME-DOGE.
            MOVE SPACES TO WTO-MESSAGE.
+		   
        MOVE-SOME-DOGE.
-      *    Ok, now to send some funds 
+      * Ok, now to send some funds 
            MOVE PAYTOI TO TO-ADDRESS.
            MOVE AMOUNTI TO SEND-AMOUNT.
            MOVE 'Sending to address' TO WTO-MESSAGE.
            PERFORM DOGE-WTO.
            MOVE TO-ADDRESS TO WTO-MESSAGE.
            PERFORM DOGE-WTO.
-      *     MOVE 'Amount:' TO WTO-MESSAGE.
-      *     PERFORM DOGE-WTO.
-      *     MOVE SEND-AMOUNT TO WTO-MESSAGE.
-      *     PERFORM DOGE-WTO.
-      *    Just some simple check incase a person hits enter
+		   
+      *    MOVE 'Amount:' TO WTO-MESSAGE.
+      *    PERFORM DOGE-WTO.
+      *    MOVE SEND-AMOUNT TO WTO-MESSAGE.
+      *    PERFORM DOGE-WTO.
+      * Just some simple check incase a person hits enter
+	  
            IF TO-ADDRESS EQUAL TO 'Enter address here'
                MOVE DFHREVRS TO PAYTOH
                MOVE 'Invalid DOGE Coin address' TO SNDMSGO
